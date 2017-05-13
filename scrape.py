@@ -1,8 +1,17 @@
 import scrape
 import pandas as pd
 import allmusic
+import os
 
-genre_df = allmusic.get_genre()
+if os.path.isfile('data/genre.csv'):
+    print('genre dic exists')
+    genre_df = pd.read_csv('data/genre.csv')
+else:
+    genre_df = allmusic.get_allgenre()
+
+target_genre = 'jazz'
+criterion = genre_df['genre'].map(lambda x: target_genre.lower() in x.lower())
+genre_df = genre_df[criterion]
 
 #df = allmusic.scrape_albums(genre_df.iloc[1:3])
 

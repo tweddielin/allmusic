@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup as bs
 import pandas as pd
 from tqdm import tqdm
 
-def get_genre(target_genre='jazz'):
+def get_allgenre():
     #driver = webdriver.Chrome('/Users/Eddie/Documents/album_review/allmusic_scrape/chromedriver')
     driver = webdriver.PhantomJS()
     driver.get('http://www.allmusic.com/advanced-search')
@@ -35,8 +35,8 @@ def get_genre(target_genre='jazz'):
         genre_list.append(genre_dict)
 
     genre_df = pd.DataFrame(genre_list)
-    criterion = genre_df['genre'].map(lambda x: target_genre.lower() in x.lower())
-    return  genre_df[criterion]
+    genre_df.to_csv('data/genres.csv')
+    return  genre_df
 
 def scrape_albums(genre_name, genre_id):
     req = requests.Session()
