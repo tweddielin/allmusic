@@ -3,9 +3,9 @@ import pandas as pd
 import allmusic
 import os
 
-if os.path.isfile('data/genre.csv'):
+if os.path.isfile('data/genres.csv'):
     print('genre dic exists')
-    genre_df = pd.read_csv('data/genre.csv')
+    genre_df = pd.read_csv('data/genres.csv')
 else:
     genre_df = allmusic.get_allgenre()
 

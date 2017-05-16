@@ -3,6 +3,8 @@ from selenium import webdriver
 from bs4 import BeautifulSoup as bs
 import pandas as pd
 from tqdm import tqdm
+import time
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 def get_allgenre():
     #driver = webdriver.Chrome('/Users/Eddie/Documents/album_review/allmusic_scrape/chromedriver')
@@ -42,6 +44,8 @@ def scrape_albums(genre_name, genre_id):
     req = requests.Session()
     requests_cache.install_cache('allmusic')
     headers = {'referer':'http://www.allmusic.com/advanced-search','user-agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.59 Safari/537.36'}
+    dcap = dict(DesiredCapabilities.PHANTOMJS)
+    dcap['phantomjs.page.settings.userAgent'] = ('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/53 (KHTML, like Gecko) Chrome/15.0.87')
     #payload = {'filters[]': 'subgenreid:MA0000002451', 'sort': ''}
     #link = 'http://www.allmusic.com/advanced-search/results/{0}'
 
@@ -50,6 +54,7 @@ def scrape_albums(genre_name, genre_id):
     albums_url = []
     artists = []
     artists_url = []
+    rating = []
     years = []
     item_ids = []
     page_no = 0
@@ -60,7 +65,7 @@ def scrape_albums(genre_name, genre_id):
 
     while True:
         print('page no', page_no)
-        site = req.post(link.format(str(page_no) if page_no>0 else ''),data=payload,headers=headers).text
+        site = req.post(link.format(str(page_no) if page_no>0 else ''), data=payload, headers=headers).text
         if 'desktop-results' not in site:
             print('nothing for page number', page_no)
             break
@@ -74,9 +79,17 @@ def scrape_albums(genre_name, genre_id):
             albums.append(album)
             album_url = row.split('"title">',1)[1].split('">',1)[0].split('<a ')[1].split('="',1)[1]
             albums_url.append(album_url)
-            client = webdriver.PhantomJS()
-            client.get(album_url)
-            page = client.page_source
+            while True:
+                try:
+                    client = webdriver.PhantomJS(desired_capabilities=dcap)
+                    client.get(album_url)
+                    page = client.page_source
+                    client.quit()
+                    break
+                except:
+                    print('Re-connect to {}'.format(album_url))
+                    time.sleep(1.5)
+
             soup = bs(page, "lxml")
             # Moods
             moods = []
@@ -111,6 +124,7 @@ def scrape_albums(genre_name, genre_id):
                 print(album, year)
                 artists_url.append('None')
 
+            time.sleep(1.5)
             album_num += 1
 
         print('Done')
