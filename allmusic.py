@@ -1,4 +1,4 @@
-import json, csv, requests, requests_cache, sqlite3, dateutil.parser
+import json, csv, requests, requests_cache
 from selenium import webdriver
 from bs4 import BeautifulSoup as bs
 import pandas as pd
@@ -53,10 +53,11 @@ def scrape_albums(genre_name, genre_id):
     years = []
     item_ids = []
     page_no = 0
-
+    album_num = 0
     print('Start Scraping {} ...'.format(genre_name))
     payload = {'filters[]': genre_id, 'sort': ''}
     link = 'http://www.allmusic.com/advanced-search/results/{0}'
+
     while True:
         print('page no', page_no)
         site = req.post(link.format(str(page_no) if page_no>0 else ''),data=payload,headers=headers).text
@@ -68,7 +69,6 @@ def scrape_albums(genre_name, genre_id):
             break
         page_no += 1
         table = site.split('<tbody>')[1].split('/tbody>')[0]
-        album_num = 0
         for row in tqdm(table.split('<tr>')[1:]):
             album = row.split('"title">',1)[1].split('">',1)[1].split('</a',1)[0]
             albums.append(album)

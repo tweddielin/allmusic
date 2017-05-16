@@ -15,7 +15,7 @@ genre_df = genre_df[criterion]
 
 #df = allmusic.scrape_albums(genre_df.iloc[1:3])
 
-df = genre_df.iloc[2:3]
+df = genre_df.iloc[0:1]
 
 for idx, row in df.iterrows():
     genre_name = row['genre']
