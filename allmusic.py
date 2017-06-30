@@ -88,7 +88,7 @@ def scrape_albums(genre_name, genre_id):
                     break
                 except:
                     print('Re-connect to {}'.format(album_url))
-                    time.sleep(1.5)
+                    time.sleep(1)
 
             soup = bs(page, "lxml")
             # Moods
@@ -124,7 +124,7 @@ def scrape_albums(genre_name, genre_id):
                 print(album, year)
                 artists_url.append('None')
 
-            time.sleep(1.5)
+            time.sleep(1)
             album_num += 1
 
         print('Done')
